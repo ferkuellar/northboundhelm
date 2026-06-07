@@ -24,3 +24,35 @@ async def test_create_and_list_projects(client):
     assert len(projects) == 1
     assert projects[0]["name"] == "Northbound Demo"
 
+
+@pytest.mark.asyncio
+async def test_duplicate_project_name_in_same_org_returns_409(client):
+    payload = {
+        "name": "FONDIXPAY",
+        "org_id": "default",
+        "budget_usd": "5000.00",
+    }
+
+    first_response = await client.post("/api/v1/projects", json=payload)
+    duplicate_response = await client.post("/api/v1/projects", json=payload)
+
+    assert first_response.status_code == 201
+    assert duplicate_response.status_code == 409
+    assert duplicate_response.json() == {
+        "code": "project_name_exists",
+        "message": "A project with this name already exists.",
+        "detail": {"name": "FONDIXPAY"},
+    }
+
+
+@pytest.mark.asyncio
+async def test_invalid_project_payload_returns_422(client):
+    response = await client.post(
+        "/api/v1/projects",
+        json={
+            "name": "",
+            "budget_usd": "-1.00",
+        },
+    )
+
+    assert response.status_code == 422

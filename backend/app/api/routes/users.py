@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
+from fastapi.responses import JSONResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -16,14 +17,20 @@ async def list_users(session: AsyncSession = Depends(get_session)) -> list[User]
 
 
 @router.post("", response_model=UserRead, status_code=status.HTTP_201_CREATED)
-async def create_user(payload: UserCreate, session: AsyncSession = Depends(get_session)) -> User:
+async def create_user(payload: UserCreate, session: AsyncSession = Depends(get_session)) -> User | JSONResponse:
     existing = await session.scalar(select(User).where(User.email == payload.email))
     if existing:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User email already exists")
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content={
+                "code": "user_email_exists",
+                "message": "A user with this email already exists.",
+                "detail": {"email": str(payload.email)},
+            },
+        )
 
     user = User(**payload.model_dump())
     session.add(user)
     await session.commit()
     await session.refresh(user)
     return user
-
