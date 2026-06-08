@@ -154,18 +154,18 @@ Sprint 011 requires a deliberate continuation decision.
 
 Northbound Helm MVP is limited to the following 10 sprints.
 
-| Sprint | Name                       | Status              | Purpose                                             |
-| -----: | -------------------------- | ------------------- | --------------------------------------------------- |
-|    001 | Foundation                 | ACCEPTED            | Backend, DB, migration, seed, Docker, health, tests |
-|    002 | API Contract Hardening     | REVIEW / ACCEPTANCE | Harden users/projects/health contracts              |
-|    003 | Metering Foundation        | PLANNED             | Record internal AI request usage events             |
-|    004 | Usage Query API            | PLANNED             | Query usage by project, user, and model             |
-|    005 | Budget Foundation          | PLANNED             | Manage budgets and calculate budget status          |
-|    006 | Alerts Foundation          | PLANNED             | Generate internal budget threshold alerts           |
-|    007 | AI Gateway Mock Proxy      | PLANNED             | Simulate gateway flow without external providers    |
-|    008 | Provider Adapter Interface | PLANNED             | Add provider abstraction and mock provider          |
-|    009 | OpenAI Adapter MVP         | PLANNED             | Add first controlled real provider adapter          |
-|    010 | MVP Readiness Review       | PLANNED             | Audit, stabilize, document, and decide next phase   |
+| Sprint | Name                       | Status   | Purpose                                             |
+| -----: | -------------------------- | -------- | --------------------------------------------------- |
+|    001 | Foundation                 | ACCEPTED | Backend, DB, migration, seed, Docker, health, tests |
+|    002 | API Contract Hardening     | ACCEPTED | Harden users/projects/health contracts              |
+|    003 | Metering Foundation        | ACCEPTED | Record internal AI request usage events             |
+|    004 | Usage Query API            | ACCEPTED | Query usage by project, user, and model             |
+|    005 | Budget Foundation          | ACCEPTED | Manage budgets and calculate budget status          |
+|    006 | Alerts Foundation          | PLANNED  | Generate internal budget threshold alerts           |
+|    007 | AI Gateway Mock Proxy      | PLANNED  | Simulate gateway flow without external providers    |
+|    008 | Provider Adapter Interface | PLANNED  | Add provider abstraction and mock provider          |
+|    009 | OpenAI Adapter MVP         | PLANNED  | Add first controlled real provider adapter          |
+|    010 | MVP Readiness Review       | PLANNED  | Audit, stabilize, document, and decide next phase   |
 
 No sprint may be inserted between these without updating this harness and user approval.
 
