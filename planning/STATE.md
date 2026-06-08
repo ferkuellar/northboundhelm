@@ -123,3 +123,31 @@ Notes:
 
 Accepted risk:
 - `project_id` plus `period` uniqueness is enforced in the service layer, not by a database constraint. This is acceptable for Sprint 005 and should be hardened before production.
+
+## Sprint 006 - Alerts Foundation
+
+Status: IMPLEMENTED / NEEDS REVIEW
+
+Evidence:
+- pytest tests/ -v: 34 passed in 2.23s
+- health: `{"status":"ok","database":"ok"}`
+- docs: HTTP/1.1 200 OK
+- alerts list: 200
+- no alerts: 200 []
+- ok budget excluded: 200 []
+- warning alert: level warning, spent 8.00, consumed_pct 80.00, message present
+- exceeded alert: level exceeded, spent 10.00, consumed_pct 100.00, message present
+- filter project_id: 200 count 1
+- filter period: 200 count 1
+- filter level: warning 200 count 1; exceeded 200 count 1
+- invalid project_id: 422
+- invalid period: 422
+- invalid level: 422
+- docker compose regression: api running, postgres healthy
+- alembic upgrade head: Context impl PostgresqlImpl; Will assume transactional DDL; no migration errors
+- seed idempotent: reused admin/developer users and FONDIXPAY/Northbound Demo/Internal Tools projects; seed completed
+
+Notes:
+- Alerts are calculated dynamically from existing budgets, projects, and AI request usage.
+- No alert records are persisted and no `alerts` table or migration was added.
+- No email, Slack, Teams, WhatsApp, PagerDuty, background workers, acknowledgement flow, resolution flow, auth, frontend, provider calls, cloud infrastructure, new packages, or observability stack were added.

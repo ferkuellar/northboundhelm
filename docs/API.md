@@ -482,10 +482,50 @@ Unknown `project_id` filter: `404 Not Found`
 
 Schema validation failure: `422 Unprocessable Entity`
 
+## Alerts Foundation
+
+Sprint 006 returns internal calculated budget threshold alerts only. It does not send email, Slack, Teams, WhatsApp, PagerDuty, or other notifications. It does not implement alert acknowledgement, resolution workflows, background workers, auth, frontend, provider calls, or cloud infrastructure.
+
+### `GET /api/v1/alerts`
+
+Purpose: return active internal budget threshold alerts calculated from existing `budgets` and `ai_requests`.
+
+Success: `200 OK`
+
+Optional filters:
+- `project_id`
+- `period`: `monthly` or `yearly`
+- `level`: `warning` or `exceeded`
+
+Response body:
+
+```json
+[
+  {
+    "project_id": "uuid",
+    "project_name": "FONDIXPAY",
+    "period": "monthly",
+    "level": "warning",
+    "message": "Project FONDIXPAY has reached 80.00% of its monthly budget.",
+    "budget_amount_usd": "100.00",
+    "spent_usd": "80.00",
+    "consumed_pct": "80.00",
+    "alert_at_pct": "80.00"
+  }
+]
+```
+
+Behavior:
+- Only budgets with `warning` or `exceeded` status are returned.
+- Budgets with `ok` status are excluded.
+- No budgets, no matching filters, or only `ok` budgets return `[]`.
+- Unknown `project_id` filter returns `404 project_not_found`.
+- Invalid `project_id`, `period`, or `level` returns `422 Unprocessable Entity`.
+
 ## Status Codes
 
 - `200 OK`: successful reads.
 - `201 Created`: successful creates.
 - `409 Conflict`: duplicate user email or duplicate project name within an org.
-- `404 Not Found`: unknown referenced user, project, AI request, or budget status project filter.
+- `404 Not Found`: unknown referenced user, project, AI request, budget status project filter, or alert project filter.
 - `422 Unprocessable Entity`: request body fails Pydantic validation.

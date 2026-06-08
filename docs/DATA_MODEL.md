@@ -131,3 +131,17 @@ Sprint 004 limitations:
 - No billing, invoicing, payments, auth, dashboard, provider calls, or cloud infrastructure were added.
 - There is no database-level uniqueness constraint for `project_id` plus `period`; Sprint 005 enforces upsert behavior in the service layer to avoid a migration.
 - Historical budget windows are not configurable yet; Sprint 005 uses current month and current year only.
+
+## Sprint 006 Alerts
+
+- Alerts are calculated dynamically from existing `budgets`, `projects`, and `ai_requests` records.
+- No `alerts` table or migration was added.
+- `GET /api/v1/alerts` returns only budget states at `warning` or `exceeded`.
+- `ok` budget states are intentionally excluded from alerts.
+- Alert filters use existing project and budget fields: `project_id`, `period`, and calculated `level`.
+
+Sprint 006 limitations:
+- Alerts are not persisted.
+- No notification delivery is implemented.
+- No acknowledgement or resolution workflow is implemented.
+- No background workers, auth, frontend, provider calls, cloud infrastructure, or observability stack were added.
