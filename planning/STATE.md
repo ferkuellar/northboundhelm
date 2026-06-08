@@ -93,7 +93,7 @@ Notes:
 
 ## Sprint 005 - Budget Foundation
 
-Status: IMPLEMENTED / NEEDS REVIEW
+Status: ACCEPTED
 
 Evidence:
 - pytest tests/ -v: 28 passed in 2.24s
@@ -120,3 +120,6 @@ Notes:
 - Budget status is calculated from existing `ai_requests.estimated_cost` values for the current month or current year.
 - `project_id` plus `period` upsert behavior is enforced in the service layer without adding a migration.
 - No notifications, alerts, billing, invoicing, auth, frontend, provider calls, cloud infrastructure, new packages, or new tables were added.
+
+Accepted risk:
+- `project_id` plus `period` uniqueness is enforced in the service layer, not by a database constraint. This is acceptable for Sprint 005 and should be hardened before production.
