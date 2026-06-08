@@ -42,7 +42,7 @@ Notes:
 
 ## Sprint 003 - Metering Foundation
 
-Status: IMPLEMENTED / NEEDS REVIEW
+Status: ACCEPTED
 
 Evidence:
 - pytest tests/ -v: 13 passed in 0.45s
