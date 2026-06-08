@@ -358,10 +358,134 @@ No matching rows return:
 []
 ```
 
+## Budget Foundation
+
+Sprint 005 manages project budget records and calculates status from recorded `ai_requests.estimated_cost`.
+It does not send notifications, enforce hard budget blocking, invoice customers, call providers, add auth, or add frontend behavior.
+
+Shared budget periods:
+- `monthly`
+- `yearly`
+
+Invalid UUID query parameters and invalid period values return `422 Unprocessable Entity`.
+
+### `GET /api/v1/budgets`
+
+Purpose: list budget records.
+
+Success: `200 OK`
+
+Optional filters:
+- `project_id`
+- `period`
+
+Response body:
+
+```json
+[
+  {
+    "id": "uuid",
+    "project_id": "uuid",
+    "period": "monthly",
+    "amount_usd": "100.00",
+    "alert_at_pct": "80.00",
+    "created_at": "2026-06-07T00:00:00Z"
+  }
+]
+```
+
+No budget records return:
+
+```json
+[]
+```
+
+### `POST /api/v1/budgets`
+
+Purpose: create or update a budget for a project and period.
+
+Request body:
+
+```json
+{
+  "project_id": "uuid",
+  "period": "monthly",
+  "amount_usd": "100.00",
+  "alert_at_pct": 80
+}
+```
+
+New budget success: `201 Created`
+
+Existing same `project_id` plus `period` success: `200 OK`
+
+Behavior:
+- `project_id` must reference an existing project.
+- `period` must be `monthly` or `yearly`.
+- `amount_usd` must be greater than `0`.
+- `alert_at_pct` must be between `1` and `100`.
+- Duplicate rows for the same `project_id` plus `period` are avoided in the service layer.
+
+Unknown project: `404 Not Found`
+
+```json
+{
+  "code": "project_not_found",
+  "message": "Project not found.",
+  "detail": {
+    "project_id": "uuid"
+  }
+}
+```
+
+Schema validation failure: `422 Unprocessable Entity`
+
+### `GET /api/v1/budgets/status`
+
+Purpose: return project budget status using `budgets` and recorded `ai_requests`.
+
+Success: `200 OK`
+
+Optional filters:
+- `project_id`
+- `period`
+
+Response body:
+
+```json
+[
+  {
+    "project_id": "uuid",
+    "project_name": "FONDIXPAY",
+    "period": "monthly",
+    "budget_amount_usd": "100.00",
+    "spent_usd": "85.00",
+    "consumed_pct": "85.00",
+    "alert_at_pct": "80.00",
+    "status": "warning"
+  }
+]
+```
+
+Status values:
+- `ok`: spend is below the alert threshold.
+- `warning`: spend is greater than or equal to `alert_at_pct` and below the budget amount.
+- `exceeded`: spend is greater than or equal to the budget amount.
+
+No budgets, or an existing project with no budget, returns:
+
+```json
+[]
+```
+
+Unknown `project_id` filter: `404 Not Found`
+
+Schema validation failure: `422 Unprocessable Entity`
+
 ## Status Codes
 
 - `200 OK`: successful reads.
 - `201 Created`: successful creates.
 - `409 Conflict`: duplicate user email or duplicate project name within an org.
-- `404 Not Found`: unknown referenced user, project, or AI request.
+- `404 Not Found`: unknown referenced user, project, AI request, or budget status project filter.
 - `422 Unprocessable Entity`: request body fails Pydantic validation.

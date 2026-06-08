@@ -81,6 +81,21 @@ Important columns:
 - `alert_at_pct`
 - `created_at`
 
+Sprint 005 behavior:
+- Budgets are managed through `GET /api/v1/budgets`, `POST /api/v1/budgets`, and `GET /api/v1/budgets/status`.
+- `period` accepts `monthly` and `yearly`.
+- `amount_usd` must be greater than `0`.
+- `alert_at_pct` must be between `1` and `100`.
+- Budget creation validates that `project_id` references an existing project.
+- The API treats `project_id` plus `period` as unique in the service layer: posting the same pair updates the existing budget instead of creating a duplicate.
+
+Relationship to usage:
+- Budget status is calculated from `SUM(ai_requests.estimated_cost)` for the same project.
+- Monthly budgets use current-month `ai_requests.created_at` records.
+- Yearly budgets use current-year `ai_requests.created_at` records.
+- `consumed_pct` is calculated as `spent_usd / amount_usd * 100`.
+- Status is `ok`, `warning`, or `exceeded`.
+
 ## Sprint 002 Limitations
 
 - No production authentication or authorization is implemented.
@@ -108,3 +123,11 @@ Sprint 004 limitations:
 - No budget enforcement or budget status calculation.
 - No alerts, forecasting, recommendations, dashboard, frontend, or provider calls.
 - Aggregation is intentionally simple and unpaginated for the MVP backend.
+
+## Sprint 005 Budget Limitations
+
+- Budget records do not trigger notifications or alerts.
+- Budget status does not block AI request recording or provider use.
+- No billing, invoicing, payments, auth, dashboard, provider calls, or cloud infrastructure were added.
+- There is no database-level uniqueness constraint for `project_id` plus `period`; Sprint 005 enforces upsert behavior in the service layer to avoid a migration.
+- Historical budget windows are not configurable yet; Sprint 005 uses current month and current year only.

@@ -90,3 +90,33 @@ Evidence:
 Notes:
 - Usage endpoints aggregate existing `ai_requests` records only.
 - No budgets, alerts, dashboard, provider calls, forecasting, recommendations, auth, new tables, packages, cloud, or observability were added.
+
+## Sprint 005 - Budget Foundation
+
+Status: IMPLEMENTED / NEEDS REVIEW
+
+Evidence:
+- pytest tests/ -v: 28 passed in 2.24s
+- health: `{"status":"ok","database":"ok"}`
+- docs: HTTP/1.1 200 OK
+- budget create: 201
+- budget duplicate update: 200
+- budget list: 200
+- budget status: 200
+- status ok: spent 1.00, consumed_pct 5.00, status ok
+- status warning: spent 8.00, consumed_pct 80.00, status warning
+- status exceeded: spent 10.00, consumed_pct 100.00, status exceeded
+- unknown project: 404 project_not_found
+- invalid period: 422
+- invalid amount: 422
+- invalid alert threshold: 422
+- invalid UUID filter: 422
+- docker compose regression: api running, postgres healthy
+- alembic upgrade head: Context impl PostgresqlImpl; Will assume transactional DDL; no migration errors
+- seed idempotent: reused admin/developer users and FONDIXPAY/Northbound Demo/Internal Tools projects; seed completed
+
+Notes:
+- Budget records use the existing `budgets` table.
+- Budget status is calculated from existing `ai_requests.estimated_cost` values for the current month or current year.
+- `project_id` plus `period` upsert behavior is enforced in the service layer without adding a migration.
+- No notifications, alerts, billing, invoicing, auth, frontend, provider calls, cloud infrastructure, new packages, or new tables were added.
