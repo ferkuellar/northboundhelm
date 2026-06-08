@@ -1,6 +1,6 @@
 # Data Model
 
-Sprint 002 keeps the Sprint 001 schema unchanged.
+Sprint 003 keeps the Sprint 001 schema unchanged and starts using `ai_requests` for internal metering records.
 
 ## `users`
 
@@ -45,16 +45,21 @@ Foreign keys:
 - `project_id` references `projects.id`
 
 Important columns:
-- `provider`
-- `model`
-- `prompt_tokens`
-- `completion_tokens`
-- `total_tokens`
-- `estimated_cost`
-- `latency_ms`
-- `status`
+- `provider` required provider label, stored as client-supplied text
+- `model` required model label, stored as client-supplied text
+- `prompt_tokens` non-negative prompt token count
+- `completion_tokens` non-negative completion token count
+- `total_tokens` calculated as `prompt_tokens + completion_tokens` by the Sprint 003 service
+- `estimated_cost` numeric cost supplied by the client for Sprint 003
+- `latency_ms` optional non-negative latency
+- `status` required status label, stored as client-supplied text
 - `metadata` JSONB in PostgreSQL
-- `created_at`
+- `created_at` required timestamp
+
+Metadata handling:
+- SQLAlchemy reserves the Python attribute name `metadata`, so the model uses `request_metadata`.
+- The database column remains named `metadata`.
+- The public API request/response field remains `metadata`.
 
 Important indexes:
 - `ix_ai_requests_project_created_at` on `project_id`, `created_at`
@@ -82,3 +87,11 @@ Important columns:
 - There is no user-project membership table; `projects.owner_id` is the only current user association.
 - Duplicate project validation is scoped to `name` plus `org_id`.
 - AI request metering tables exist, but provider calls and token metering behavior are out of scope.
+
+## Sprint 003 Limitations
+
+- AI request records are manual/internal metering events only.
+- No external provider calls, proxy behavior, streaming, or provider API keys are implemented.
+- No budget enforcement, alerts, rate limiting, or analytics endpoints are implemented.
+- `estimated_cost` is accepted from the request and not independently calculated yet.
+- `status` is validated as non-empty text, but no enum is enforced yet.

@@ -1,6 +1,6 @@
 # API
 
-Northbound Helm exposes Sprint 002 backend endpoints under `/api/v1`.
+Northbound Helm exposes backend endpoints under `/api/v1`.
 
 Error responses for duplicate resources use a stable JSON contract:
 
@@ -143,9 +143,125 @@ Duplicate project name within the same `org_id`: `409 Conflict`
 
 Schema validation failure: `422 Unprocessable Entity`
 
+## AI Request Metering
+
+Sprint 003 adds internal metering records only. These endpoints do not call OpenAI, Anthropic, Gemini, Mistral, or any other external provider.
+
+### `POST /api/v1/ai/requests`
+
+Purpose: record an AI usage event in `ai_requests`.
+
+Request body:
+
+```json
+{
+  "user_id": "uuid",
+  "project_id": "uuid",
+  "provider": "openai",
+  "model": "gpt-4o",
+  "prompt_tokens": 1000,
+  "completion_tokens": 500,
+  "estimated_cost": "0.005000",
+  "latency_ms": 1200,
+  "status": "success",
+  "metadata": {
+    "environment": "local",
+    "source": "manual_test"
+  }
+}
+```
+
+Success: `201 Created`
+
+Response body:
+
+```json
+{
+  "id": "uuid",
+  "user_id": "uuid",
+  "project_id": "uuid",
+  "provider": "openai",
+  "model": "gpt-4o",
+  "prompt_tokens": 1000,
+  "completion_tokens": 500,
+  "total_tokens": 1500,
+  "estimated_cost": "0.005000",
+  "latency_ms": 1200,
+  "status": "success",
+  "metadata": {
+    "environment": "local",
+    "source": "manual_test"
+  },
+  "created_at": "2026-06-07T00:00:00Z"
+}
+```
+
+Behavior:
+- `total_tokens` is calculated as `prompt_tokens + completion_tokens`.
+- Optional `metadata` is stored in the PostgreSQL `metadata` column through the model's safe `request_metadata` Python attribute.
+- `estimated_cost` is stored as supplied by the client for Sprint 003.
+
+Unknown user: `404 Not Found`
+
+```json
+{
+  "code": "user_not_found",
+  "message": "User not found.",
+  "detail": {
+    "user_id": "uuid"
+  }
+}
+```
+
+Unknown project: `404 Not Found`
+
+```json
+{
+  "code": "project_not_found",
+  "message": "Project not found.",
+  "detail": {
+    "project_id": "uuid"
+  }
+}
+```
+
+Schema validation failure: `422 Unprocessable Entity`
+
+### `GET /api/v1/ai/requests`
+
+Purpose: list recorded AI request metering events.
+
+Success: `200 OK`
+
+Optional filters:
+- `project_id`
+- `user_id`
+- `provider`
+- `model`
+- `status`
+
+### `GET /api/v1/ai/requests/{request_id}`
+
+Purpose: return one metering record by ID.
+
+Success: `200 OK`
+
+Missing request: `404 Not Found`
+
+```json
+{
+  "code": "ai_request_not_found",
+  "message": "AI request not found.",
+  "detail": {
+    "request_id": "uuid"
+  }
+}
+```
+
 ## Status Codes
 
 - `200 OK`: successful reads.
 - `201 Created`: successful creates.
 - `409 Conflict`: duplicate user email or duplicate project name within an org.
+- `404 Not Found`: unknown referenced user, project, or AI request.
 - `422 Unprocessable Entity`: request body fails Pydantic validation.
