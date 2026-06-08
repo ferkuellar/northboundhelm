@@ -65,3 +65,28 @@ Notes:
 - AI request records are internal/manual metering events only.
 - No OpenAI, Anthropic, Gemini, Mistral, proxy, streaming, rate limiting, budget enforcement, dashboard, frontend, or cloud infrastructure was added.
 - `estimated_cost` is stored as provided by the request for Sprint 003.
+
+## Sprint 004 - Usage Query API
+
+Status: IMPLEMENTED / NEEDS REVIEW
+
+Evidence:
+- pytest tests/ -v: 21 passed in 1.06s
+- health: `{"status":"ok","database":"ok"}`
+- docs: HTTP/1.1 200 OK
+- usage by project: 200
+- usage by user: 200
+- usage by model: 200
+- project aggregation totals: request_count 2, prompt_tokens 300, completion_tokens 150, total_tokens 450, estimated_cost 0.003000
+- user aggregation totals: request_count 2, prompt_tokens 300, completion_tokens 150, total_tokens 450, estimated_cost 0.003000
+- model aggregation totals: request_count 2, prompt_tokens 300, completion_tokens 150, total_tokens 450, estimated_cost 0.003000
+- empty filter result: 200 []
+- invalid UUID filter: 422
+- invalid datetime filter: 422
+- docker compose regression: api running, postgres healthy
+- alembic upgrade head: Context impl PostgresqlImpl; Will assume transactional DDL; no migration errors
+- seed idempotent: reused admin/developer users and FONDIXPAY/Northbound Demo/Internal Tools projects; seed completed
+
+Notes:
+- Usage endpoints aggregate existing `ai_requests` records only.
+- No budgets, alerts, dashboard, provider calls, forecasting, recommendations, auth, new tables, packages, cloud, or observability were added.

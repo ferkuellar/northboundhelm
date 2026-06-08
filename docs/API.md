@@ -258,6 +258,106 @@ Missing request: `404 Not Found`
 }
 ```
 
+## Usage Query API
+
+Sprint 004 aggregates existing `ai_requests` records. It does not enforce budgets, generate alerts, call providers, forecast spend, or produce FinOps recommendations.
+
+Shared optional query parameters:
+- `start_date`: filter `ai_requests.created_at >= start_date`
+- `end_date`: filter `ai_requests.created_at <= end_date`
+- `provider`
+- `model`
+- `status`
+- `project_id`
+- `user_id`
+
+Invalid UUID or datetime query parameters return `422 Unprocessable Entity`.
+
+### `GET /api/v1/usage/by-project`
+
+Purpose: return usage aggregated by project.
+
+Success: `200 OK`
+
+Response body:
+
+```json
+[
+  {
+    "project_id": "uuid",
+    "project_name": "FONDIXPAY",
+    "request_count": 3,
+    "prompt_tokens": 3000,
+    "completion_tokens": 1500,
+    "total_tokens": 4500,
+    "estimated_cost": "0.015000"
+  }
+]
+```
+
+No matching rows return:
+
+```json
+[]
+```
+
+### `GET /api/v1/usage/by-user`
+
+Purpose: return usage aggregated by user.
+
+Success: `200 OK`
+
+Response body:
+
+```json
+[
+  {
+    "user_id": "uuid",
+    "user_email": "developer1@northboundhelm.io",
+    "user_name": "Developer One",
+    "request_count": 3,
+    "prompt_tokens": 3000,
+    "completion_tokens": 1500,
+    "total_tokens": 4500,
+    "estimated_cost": "0.015000"
+  }
+]
+```
+
+No matching rows return:
+
+```json
+[]
+```
+
+### `GET /api/v1/usage/by-model`
+
+Purpose: return usage aggregated by provider and model.
+
+Success: `200 OK`
+
+Response body:
+
+```json
+[
+  {
+    "provider": "openai",
+    "model": "gpt-4o",
+    "request_count": 3,
+    "prompt_tokens": 3000,
+    "completion_tokens": 1500,
+    "total_tokens": 4500,
+    "estimated_cost": "0.015000"
+  }
+]
+```
+
+No matching rows return:
+
+```json
+[]
+```
+
 ## Status Codes
 
 - `200 OK`: successful reads.

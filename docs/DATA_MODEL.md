@@ -95,3 +95,16 @@ Important columns:
 - No budget enforcement, alerts, rate limiting, or analytics endpoints are implemented.
 - `estimated_cost` is accepted from the request and not independently calculated yet.
 - `status` is validated as non-empty text, but no enum is enforced yet.
+
+## Sprint 004 Usage Aggregation
+
+- `ai_requests` is the source of truth for usage query endpoints.
+- No new tables or columns were added for usage aggregation.
+- Aggregations are computed at query time.
+- Grouping is available by project, user, and provider/model.
+- Optional filters use existing `ai_requests` columns: `created_at`, `provider`, `model`, `status`, `project_id`, and `user_id`.
+
+Sprint 004 limitations:
+- No budget enforcement or budget status calculation.
+- No alerts, forecasting, recommendations, dashboard, frontend, or provider calls.
+- Aggregation is intentionally simple and unpaginated for the MVP backend.
