@@ -68,7 +68,7 @@ Notes:
 
 ## Sprint 004 - Usage Query API
 
-Status: IMPLEMENTED / NEEDS REVIEW
+Status: ACCEPTED
 
 Evidence:
 - pytest tests/ -v: 21 passed in 1.06s
