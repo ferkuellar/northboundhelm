@@ -20,7 +20,7 @@ Next recommended sprint: Sprint 002 - API Contract Hardening + CRUD Validation.
 
 ## Sprint 002 - API Contract Hardening
 
-Status: IMPLEMENTED / NEEDS REVIEW
+Status: ACCEPTED
 
 Evidence:
 - pytest tests/ -v: 7 passed in 0.21s
